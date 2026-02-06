@@ -8,7 +8,26 @@ Unlike standard aggregators that just filter by keywords, this system *reads* th
 
 ---
 
-## 🚀 Key Features
+## � Table of Contents
+
+- [Key Features](#-key-features)
+- [Prerequisites](#-prerequisites)
+- [Architecture & Workflow](#-architecture--workflow)
+- [Installation](#-installation)
+- [Configuration](#️-configuration)
+  - [Environment Variables Reference](#-environment-variables-reference)
+  - [Telegram Setup](#-telegram-setup)
+  - [Email Setup](#-email-setup)
+- [How to Run](#-how-to-run)
+- [Managing Email Recipients](#-managing-email-recipients-backend)
+- [Using the Telegram Bot](#-using-the-telegram-bot)
+- [Tech Stack](#-tech-stack)
+- [Contributing](#-contributing)
+- [License](#-license)
+
+---
+
+## �🚀 Key Features
 
 *   **🔒 Privacy-First**: Runs 100% locally. Your data and interests never leave your machine.
 *   **🧠 AI Evaluation**: Uses Llama 3.1 to score items based on "Personas".
@@ -28,6 +47,7 @@ Unlike standard aggregators that just filter by keywords, this system *reads* th
 2.  **Ollama** installed and running. [Download Ollama](https://ollama.com/download).
 3.  **(Optional) Telegram Account** for mobile delivery and control.
 4.  **(Optional) Gmail Account** for email delivery.
+
 
 ---
 
@@ -256,7 +276,35 @@ Here is the detailed comprehensive breakdown of how the system processes informa
     ```
 2.  Open `.env` in any text editor and configure your settings.
 
-### 📱 Telegram Setup
+### � Environment Variables Reference
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `LOG_LEVEL` | `INFO` | Logging verbosity (DEBUG, INFO, WARNING, ERROR) |
+| `DATA_DIR` | `./data` | Directory for storing digests and database |
+| **LLM Settings** | | |
+| `OLLAMA_BASE_URL` | `http://localhost:11434` | Ollama server URL |
+| `OLLAMA_MODEL` | `llama3.1` | Model to use for evaluation |
+| **Persona Toggles** | | |
+| `PERSONA_GENAI_NEWS_ENABLED` | `true` | Enable GenAI Tech News persona |
+| `PERSONA_PRODUCT_IDEAS_ENABLED` | `true` | Enable Product Ideas persona |
+| `PERSONA_FINANCE_ENABLED` | `true` | Enable Financial Analysis persona |
+| **Thresholds** | | |
+| `GENAI_NEWS_MIN_RELEVANCE` | `0.6` | Minimum relevance score for GenAI |
+| `PRODUCT_IDEAS_MIN_REUSABILITY` | `0.5` | Minimum score for Product Ideas |
+| **Email Settings** | | |
+| `EMAIL_ENABLED` | `false` | Enable email delivery |
+| `EMAIL_SMTP_HOST` | `smtp.gmail.com` | SMTP server host |
+| `EMAIL_SMTP_PORT` | `465` | SMTP port (465 for SSL, 587 for TLS) |
+| `EMAIL_FROM` | — | Your email address |
+| `EMAIL_TO` | — | Primary recipient email |
+| `EMAIL_PASSWORD` | — | Gmail App Password |
+| **Telegram Settings** | | |
+| `TELEGRAM_ENABLED` | `false` | Enable Telegram bot |
+| `TELEGRAM_BOT_TOKEN` | — | Bot token from @BotFather |
+| `TELEGRAM_CHAT_ID` | — | Your chat ID from @userinfobot |
+
+### �📱 Telegram Setup
 1.  Search for **@BotFather** on Telegram -> `/newbot`.
 2.  Get your `TELEGRAM_BOT_TOKEN`.
 3.  Search for **@userinfobot** to get your `TELEGRAM_CHAT_ID`.

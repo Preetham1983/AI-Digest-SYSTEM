@@ -18,9 +18,13 @@ class Settings(BaseSettings):
     OLLAMA_BASE_URL: str = "http://localhost:11434"
     OLLAMA_MODEL: str = "llama3.1"
 
-    # Thresholds
+    # Thresholds (previously hardcoded)
     GENAI_NEWS_MIN_RELEVANCE: float = 0.6
     PRODUCT_IDEAS_MIN_REUSABILITY: float = 0.5
+    SEMANTIC_THRESHOLD: float = 0.15  # Evaluator pre-filter (very lenient)
+    PREFILTER_THRESHOLD: float = 0.35  # Ingestion semantic prefilter
+    HIGH_ENGAGEMENT_THRESHOLD: int = 100  # Raw score to bypass semantic filter
+    TELEGRAM_CHUNK_SIZE: int = 4000  # Max chars per Telegram message
 
     # Email
     EMAIL_ENABLED: bool = False

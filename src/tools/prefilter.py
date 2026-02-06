@@ -3,6 +3,7 @@ import numpy as np
 from src.models.items import IngestedItem
 from src.services.logger import logger
 from src.services.embedding import get_embedding, get_embeddings_batch, get_model
+from src.config import settings
 
 # Anchor concepts representing the ideal content for each persona
 ANCHORS = {
@@ -31,7 +32,7 @@ class SemanticPrefilter:
         self._initialized = True
         logger.info("✅ Semantic prefilter ready!")
     
-    async def is_relevant(self, item: IngestedItem, threshold: float = 0.35) -> bool:
+    async def is_relevant(self, item: IngestedItem, threshold: float = None) -> bool:
         """
         Checks if item is semantically similar to ANY of the persona anchors.
         Uses cosine similarity with normalized embeddings.
@@ -39,6 +40,9 @@ class SemanticPrefilter:
         # Initialize on first call
         if not self._initialized:
             self._initialize_anchors()
+        
+        if threshold is None:
+            threshold = settings.PREFILTER_THRESHOLD
         
         # Combine title and content for embedding
         text = (item.title + " " + (item.content or ""))[:512]
@@ -59,12 +63,12 @@ class SemanticPrefilter:
             return True
         
         # Fallback: Keep high-engagement items regardless of semantic match
-        if item.raw_score and item.raw_score > 100:
+        if item.raw_score and item.raw_score > settings.HIGH_ENGAGEMENT_THRESHOLD:
             return True
             
         return False
     
-    async def filter_batch(self, items: List[IngestedItem], threshold: float = 0.35) -> List[IngestedItem]:
+    async def filter_batch(self, items: List[IngestedItem], threshold: float = None) -> List[IngestedItem]:
         """
         Batch filter for efficiency - encodes all items at once using shared model.
         """
@@ -73,6 +77,9 @@ class SemanticPrefilter:
         
         if not items:
             return []
+        
+        if threshold is None:
+            threshold = settings.PREFILTER_THRESHOLD
         
         # Batch encode all items using shared model
         texts = [(item.title + " " + (item.content or ""))[:512] for item in items]
@@ -91,7 +98,7 @@ class SemanticPrefilter:
         for i, item in enumerate(items):
             if max_scores[i] >= threshold:
                 relevant.append(item)
-            elif item.raw_score and item.raw_score > 100:
+            elif item.raw_score and item.raw_score > settings.HIGH_ENGAGEMENT_THRESHOLD:
                 relevant.append(item)
         
         logger.info(f"Semantic prefilter: {len(relevant)}/{len(items)} items passed (threshold={threshold})")

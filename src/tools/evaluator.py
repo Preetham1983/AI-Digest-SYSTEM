@@ -1,20 +1,11 @@
 from abc import ABC, abstractmethod
 from typing import Dict, Any, List
 import numpy as np
-from sentence_transformers import SentenceTransformer
 from src.models.items import IngestedItem, EvaluationResult
 from src.services.llm import llm
 from src.services.logger import logger
-
-# Shared embedding model (singleton) - for evaluator only
-_embedding_model = None
-
-def get_embedding_model():
-    global _embedding_model
-    if _embedding_model is None:
-        logger.info("Loading all-MiniLM-L6-v2 for evaluator semantic filter...")
-        _embedding_model = SentenceTransformer('all-MiniLM-L6-v2')
-    return _embedding_model
+from src.services.embedding import get_model, get_embeddings_batch
+from src.config import settings
 
 # Persona anchor texts for semantic scoring
 PERSONA_ANCHORS = {
@@ -45,21 +36,20 @@ class BaseEvaluator(ABC):
         pass
 
     def _get_anchor_embedding(self):
-        """Get cached anchor embedding for this persona"""
+        """Get cached anchor embedding for this persona using shared model"""
         if self._anchor_embedding is None:
-            model = get_embedding_model()
+            model = get_model()  # Use shared singleton
             anchor_text = PERSONA_ANCHORS.get(self.get_persona_name(), "")
             self._anchor_embedding = model.encode(anchor_text, normalize_embeddings=True)
         return self._anchor_embedding
 
     def _compute_semantic_scores(self, items: List[IngestedItem]) -> List[float]:
-        """Batch compute semantic similarity scores - returns raw cosine similarity"""
-        model = get_embedding_model()
+        """Batch compute semantic similarity scores using shared model"""
         anchor_emb = self._get_anchor_embedding()
         
-        # Batch encode all items
+        # Batch encode all items using shared model
         texts = [(item.title + " " + (item.content or ""))[:512] for item in items]
-        item_embeddings = model.encode(texts, normalize_embeddings=True, show_progress_bar=False)
+        item_embeddings = get_embeddings_batch(texts, normalize=True, show_progress=False)
         
         # Compute cosine similarity (dot product of normalized vectors)
         scores = np.dot(item_embeddings, anchor_emb)
@@ -78,14 +68,11 @@ class BaseEvaluator(ABC):
         logger.info(f"[{persona}] Running semantic pre-filter...")
         semantic_scores = self._compute_semantic_scores(items)
         
-        # VERY LOW threshold - only filter items with almost zero relevance
-        SEMANTIC_THRESHOLD = 0.15  # Raw cosine similarity (very lenient)
-        
         items_for_llm = []
         results = []
         
         for item, score in zip(items, semantic_scores):
-            if score >= SEMANTIC_THRESHOLD:
+            if score >= settings.SEMANTIC_THRESHOLD:
                 items_for_llm.append(item)
             else:
                 # Only discard if VERY low score

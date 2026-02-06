@@ -5,14 +5,10 @@ from src.config import settings
 from src.services.logger import logger
 
 async def send_email(subject: str, markdown_content: str):
+    """Send email to primary recipient and all custom recipients using a single SMTP connection."""
     if not settings.EMAIL_FROM or not settings.EMAIL_TO or not settings.EMAIL_PASSWORD:
         logger.warning("Email configuration missing. Skipping email delivery.")
         return
-
-    message = EmailMessage()
-    message["From"] = settings.EMAIL_FROM
-    message["To"] = settings.EMAIL_TO
-    message["Subject"] = subject
 
     # Convert Markdown to HTML
     html_body = markdown.markdown(markdown_content)
@@ -43,16 +39,10 @@ async def send_email(subject: str, markdown_content: str):
     </body>
     </html>
     """
-    
-    message.set_content(markdown_content) # Fallback plain text
-    message.add_alternative(full_html, subtype='html')
 
     try:
         # Get custom recipients from DB
         from src.services.database import db
-        # We need to get the preference synchronously or ensure we are in an async context.
-        # Since this function is async, we can call the async db method.
-        # Note: We create a new connection or use the existing db instance.
         
         custom_emails_str = await db.get_preference("DELIVERY_EMAIL_CUSTOM_RECIPIENTS", "")
         custom_emails = [e.strip() for e in custom_emails_str.split(',') if e.strip()]
@@ -63,7 +53,7 @@ async def send_email(subject: str, markdown_content: str):
             recipients.append(settings.EMAIL_TO)
         
         for ce in custom_emails:
-            if ce not in recipients: # Avoid duplicates
+            if ce not in recipients:  # Avoid duplicates
                 recipients.append(ce)
         
         if not recipients:
@@ -72,39 +62,43 @@ async def send_email(subject: str, markdown_content: str):
 
         logger.info(f"Preparing to send email to {len(recipients)} recipients...")
 
-        # SMTP Connection context
-        # Use implicit SSL on port 465 (usually more reliable than STARTTLS on 587)
-        use_tls = False
-        start_tls = True
-        
-        if settings.EMAIL_SMTP_PORT == 465:
-            use_tls = True
-            start_tls = False
+        # Determine TLS settings based on port
+        use_tls = settings.EMAIL_SMTP_PORT == 465
+        start_tls = not use_tls  # Use STARTTLS for port 587
 
-        # We'll use a single connection for efficiency if possible, 
-        # but for simplicity and robustness against individual failures, we can loop.
-        # Let's try sending individually to avoid exposing all recipients in To/CC fields 
-        # and to handle per-user failures gracefully.
-        
-        for recipient in recipients:
-            try:
-                # Update To field for each message
-                message.replace_header("To", recipient)
-                
-                logger.info(f"Sending email to {recipient}...")
-                await aiosmtplib.send(
-                    message,
-                    hostname=settings.EMAIL_SMTP_HOST,
-                    port=settings.EMAIL_SMTP_PORT,
-                    username=settings.EMAIL_FROM,
-                    password=settings.EMAIL_PASSWORD,
-                    use_tls=use_tls,
-                    start_tls=start_tls,
-                    timeout=settings.EMAIL_TIMEOUT
-                )
-                logger.info(f"Email sent successfully to {recipient}.")
-            except Exception as e:
-                logger.error(f"Failed to send email to {recipient}: {e}")
+        # Use a SINGLE connection for ALL recipients (optimized)
+        try:
+            smtp = aiosmtplib.SMTP(
+                hostname=settings.EMAIL_SMTP_HOST,
+                port=settings.EMAIL_SMTP_PORT,
+                use_tls=use_tls,
+                start_tls=start_tls,
+                timeout=settings.EMAIL_TIMEOUT
+            )
+            
+            await smtp.connect()
+            await smtp.login(settings.EMAIL_FROM, settings.EMAIL_PASSWORD)
+            
+            for recipient in recipients:
+                try:
+                    # Create a fresh message for each recipient
+                    message = EmailMessage()
+                    message["From"] = settings.EMAIL_FROM
+                    message["To"] = recipient
+                    message["Subject"] = subject
+                    message.set_content(markdown_content)  # Fallback plain text
+                    message.add_alternative(full_html, subtype='html')
+                    
+                    await smtp.send_message(message)
+                    logger.info(f"✅ Email sent to {recipient}")
+                except Exception as e:
+                    logger.error(f"Failed to send email to {recipient}: {e}")
+            
+            await smtp.quit()
+            logger.info(f"Email delivery complete ({len(recipients)} recipients).")
+            
+        except Exception as e:
+            logger.error(f"SMTP connection failed: {e}")
 
     except Exception as e:
         logger.error(f"General email failure: {e}")
@@ -137,7 +131,7 @@ async def send_telegram(markdown_content: str):
     
     lines = html_content.split('\n')
     for line in lines:
-        if len(current_chunk) + len(line) + 1 > 4000:
+        if len(current_chunk) + len(line) + 1 > settings.TELEGRAM_CHUNK_SIZE:
             chunks.append(current_chunk)
             current_chunk = ""
         current_chunk += line + "\n"
