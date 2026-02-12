@@ -304,13 +304,13 @@ Here is the detailed comprehensive breakdown of how the system processes informa
 | `TELEGRAM_BOT_TOKEN` | — | Bot token from @BotFather |
 | `TELEGRAM_CHAT_ID` | — | Your chat ID from @userinfobot |
 
-### �📱 Telegram Setup
+### Telegram Setup
 1.  Search for **@BotFather** on Telegram -> `/newbot`.
 2.  Get your `TELEGRAM_BOT_TOKEN`.
 3.  Search for **@userinfobot** to get your `TELEGRAM_CHAT_ID`.
 4.  Add these to `.env`.
 
-### 📧 Email Setup
+### Email Setup
 1.  Use a Gmail App Password (Security > 2-Step Verification > App Passwords).
 2.  Add `EMAIL_FROM`, `EMAIL_TO`, and `EMAIL_PASSWORD` to `.env`.
 
