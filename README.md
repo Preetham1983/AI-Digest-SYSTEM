@@ -1,4 +1,4 @@
-# 🧠 AI-Powered Intelligence Digest System
+# AI-Powered Intelligence Digest System
 
 > **Your Local, Privacy-First Personal Intelligence Analyst.**
 
@@ -8,7 +8,7 @@ Unlike standard aggregators that just filter by keywords, this system *reads* th
 
 ---
 
-## � Table of Contents
+## Table of Contents
 
 - [Key Features](#-key-features)
 - [Prerequisites](#-prerequisites)
@@ -27,21 +27,21 @@ Unlike standard aggregators that just filter by keywords, this system *reads* th
 
 ---
 
-## �🚀 Key Features
+## Key Features
 
-*   **🔒 Privacy-First**: Runs 100% locally. Your data and interests never leave your machine.
-*   **🧠 AI Evaluation**: Uses Llama 3.1 to score items based on "Personas".
-*   **🎯 Smart Exclusive Assignment**: 
+*   ** Privacy-First**: Runs 100% locally. Your data and interests never leave your machine.
+*   ** AI Evaluation**: Uses Llama 3.1 to score items based on "Personas".
+*   ** Smart Exclusive Assignment**: 
     *   Items are scored against all active personas (GenAI, Product, Finance).
     *   Each item is assigned **exclusively** to the persona where it scores highest.
     *   **Result**: No duplicates across categories. A clean, focused digest.
-*   **👥 Support for Custom Recipients**: Send the digest to your team or friends easily via the backend management script.
-*   **💬 Interactive Telegram Bot**: Control the entire pipeline, change settings, and get digests on demand from your phone.
-*   **🕸️ Smart RAG Pipeline**: Uses Vector Search to avoid duplicates and find the most relevant historical context.
+*   ** Support for Custom Recipients**: Send the digest to your team or friends easily via the backend management script.
+*   ** Interactive Telegram Bot**: Control the entire pipeline, change settings, and get digests on demand from your phone.
+*   ** Smart RAG Pipeline**: Uses Vector Search to avoid duplicates and find the most relevant historical context.
 
 ---
 
-## 🛠 Prerequisites
+##  Prerequisites
 
 1.  **Python 3.11+** installed.
 2.  **Ollama** installed and running. [Download Ollama](https://ollama.com/download).
@@ -51,7 +51,7 @@ Unlike standard aggregators that just filter by keywords, this system *reads* th
 
 ---
 
-## 🌊 Architecture & Workflow
+##  Architecture & Workflow
 
 Here is the detailed comprehensive breakdown of how the system processes information:
 
@@ -254,7 +254,7 @@ Here is the detailed comprehensive breakdown of how the system processes informa
 
 ---
 
-## 📦 Installation
+##  Installation
 
 1.  **Open a terminal** in the project folder.
 2.  **Install dependencies**:
@@ -268,7 +268,7 @@ Here is the detailed comprehensive breakdown of how the system processes informa
 
 ---
 
-## ⚙️ Configuration
+##  Configuration
 
 1.  Copy the example config:
     ```powershell
@@ -316,7 +316,7 @@ Here is the detailed comprehensive breakdown of how the system processes informa
 
 ---
 
-## 🚦 How to Run
+##  How to Run
 
 ### Method 1: The "One-Click" Start (Easiest)
 Double-click **`start.bat`** in the folder.
@@ -337,7 +337,7 @@ npm run dev
 
 ---
 
-## 👥 Managing Email Recipients (Backend)
+##  Managing Email Recipients (Backend)
 
 You can add multiple recipients for the digest directly from the command line.
 
@@ -360,7 +360,7 @@ The system will automatically send the digest to the primary `EMAIL_TO` **plus**
 
 ---
 
-## 🤖 Using the Telegram Bot
+##  Using the Telegram Bot
 
 | Command | Description |
 | :--- | :--- |
@@ -372,7 +372,7 @@ The system will automatically send the digest to the primary `EMAIL_TO` **plus**
 
 ---
 
-## 💻 Tech Stack
+##  Tech Stack
 
 *   **Core Logic**: Python 3.11+
 *   **LLM Engine**: Ollama (Llama 3.1)
@@ -383,7 +383,7 @@ The system will automatically send the digest to the primary `EMAIL_TO` **plus**
 
 ---
 
-## 🤝 Contributing
+##  Contributing
 
 Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
@@ -395,37 +395,8 @@ Contributions are what make the open-source community such an amazing place to l
 
 ---
 
-## 📄 License
 
-Distributed under the MIT License. See below for more information.
-
-```text
-MIT License
-
-Copyright (c) 2024 AI-DEG
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
-
----
-
-## 🙏 Acknowledgments
+##  Acknowledgments
 
 *   [Ollama](https://ollama.com/) for making local LLMs accessible.
 *   [FastAPI](https://fastapi.tiangolo.com/) for the high-performance API.
